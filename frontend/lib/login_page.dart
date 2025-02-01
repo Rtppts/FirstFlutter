@@ -10,13 +10,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
   String _errorMessage = "";
 
   void _handleLogin() async {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
+    String username = _username.text;
+    String password = _password.text;
 
     String responseMessage = await ApiService.login(username, password);
 
@@ -37,32 +37,130 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: "Username"),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: "Password"),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _handleLogin,
-              child: const Text("Login"),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _errorMessage,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ],
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(   //Widget ที่ช่วยให้เลื่อน (Scroll) ได้ เมื่อเนื้อหาเยอะเกินขนาดหน้าจอ
+          padding: const EdgeInsets.symmetric(horizontal: 32),  //ระยะห่างภายใน (Padding) ด้านซ้าย-ขวา   vertical: บน-ล่าง 
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🔹 โลโก้ / ชื่อแอป
+              const Text(
+                "Sample App",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              const Text(
+                "Login Page",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              const Text(
+                "Sign in",
+                style: TextStyle(fontSize: 18, color: Colors.black54),
+              ),
+              const SizedBox(height: 20),
+
+              // 🔹 ช่องใส่ Username
+              TextField(
+                controller: _username,   //มี _ เพราะเป็นตัวแปร Private ใน Dart ถ้าตัวแปรขึ้นต้นด้วย _ จะ ใช้ได้แค่ภายในไฟล์เดียวกัน
+                decoration: InputDecoration(
+                  labelText: "UserName",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: const Icon(Icons.person),
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              // 🔹 ช่องใส่ Password
+              TextField(
+                controller: _password,
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: const Icon(Icons.lock),
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 10),
+
+              // 🔹 Forgot Password
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    // TODO: Add Forgot Password Function
+                  },
+                  child: const Text(
+                    "Forgot Password",
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // 🔹 ปุ่ม Login
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _handleLogin,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(fontSize: 22, color: Colors.white),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 🔹 แสดง Error ถ้า Login ไม่สำเร็จ
+              Text(
+                _errorMessage,
+                style: const TextStyle(color: Colors.red),
+              ),
+
+              const SizedBox(height: 20),
+
+              // 🔹 ลิงก์ไปหน้าสมัครสมาชิก
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Does not have account?"),
+                  TextButton(
+                    onPressed: () {
+                      // TODO: Add Sign Up Function
+                    },
+                    child: const Text(
+                      "Sign in",
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

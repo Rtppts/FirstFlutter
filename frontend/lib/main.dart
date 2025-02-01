@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false, //ใช้เพื่อ ปิดแถบ Debug Banner ที่มุมขวาบนของแอป
       title: 'TestLogin',  //กำหนดชื่อของแอป (อาจแสดงใน Task Manager ของมือถือ)
-      theme: ThemeData(primarySwatch: Colors.red),
       home: const LoginPage(),
     );
   }
