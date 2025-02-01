@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '/api_service.dart';
 import '/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
+  
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -12,26 +13,55 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  String _errorMessage = "";
+  bool _isPasswordVisible = false;
 
   void _handleLogin() async {
     String username = _username.text;
     String password = _password.text;
 
-    String responseMessage = await ApiService.login(username, password);
+    Map<String, dynamic> response = await ApiService.login(username, password);
 
-    if (responseMessage != "เชื่อมต่อไม่ได้") {
+    if (response.containsKey("message")) {  
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(message: responseMessage),
+          builder: (context) =>
+              HomePage(message: response["message"].toString()),
         ),
       );
     } else {
-      setState(() {
-        _errorMessage = "เชื่อมต่อ Backend ไม่ได้!";
-      });
+      try {
+        // 🔹 ตรวจสอบว่า response["error"] เป็น JSON หรือไม่
+        final errorData = jsonDecode(response["error"]);
+        String errorMessage = errorData is Map<String, dynamic> && errorData.containsKey("error") 
+            ? errorData["error"]
+            : response["error"];
+        
+        showErrorDialog(errorMessage); // 🔹 แสดง Popup แจ้งเตือน
+      } catch (e) {
+        showErrorDialog(response["error"] ?? "เกิดข้อผิดพลาด");
+      }
     }
+  }
+
+  void showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("แจ้งเตือน"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Popup
+              },
+              child: const Text("ตกลง"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -39,12 +69,11 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: SingleChildScrollView(   //Widget ที่ช่วยให้เลื่อน (Scroll) ได้ เมื่อเนื้อหาเยอะเกินขนาดหน้าจอ
-          padding: const EdgeInsets.symmetric(horizontal: 32),  //ระยะห่างภายใน (Padding) ด้านซ้าย-ขวา   vertical: บน-ล่าง 
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 🔹 โลโก้ / ชื่อแอป
               const Text(
                 "Sample App",
                 style: TextStyle(
@@ -73,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
 
               // 🔹 ช่องใส่ Username
               TextField(
-                controller: _username,   //มี _ เพราะเป็นตัวแปร Private ใน Dart ถ้าตัวแปรขึ้นต้นด้วย _ จะ ใช้ได้แค่ภายในไฟล์เดียวกัน
+                controller: _username,
                 decoration: InputDecoration(
                   labelText: "UserName",
                   border: OutlineInputBorder(
@@ -84,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 15),
 
-              // 🔹 ช่องใส่ Password
+              // 🔹 ช่องใส่ Password พร้อมปุ่มแสดง/ซ่อนรหัสผ่าน
               TextField(
                 controller: _password,
                 decoration: InputDecoration(
@@ -93,12 +122,24 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
+                obscureText: !_isPasswordVisible,
               ),
+
               const SizedBox(height: 10),
 
-              // 🔹 Forgot Password
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -134,31 +175,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
 
               const SizedBox(height: 20),
-
-              // 🔹 แสดง Error ถ้า Login ไม่สำเร็จ
-              Text(
-                _errorMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-
-              const SizedBox(height: 20),
-
-              // 🔹 ลิงก์ไปหน้าสมัครสมาชิก
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Does not have account?"),
-                  TextButton(
-                    onPressed: () {
-                      // TODO: Add Sign Up Function
-                    },
-                    child: const Text(
-                      "Sign in",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
