@@ -5,7 +5,7 @@ import '/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-  
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
 
     Map<String, dynamic> response = await ApiService.login(username, password);
 
-    if (response.containsKey("message")) {  
+    if (response.containsKey("message")) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -33,10 +33,11 @@ class _LoginPageState extends State<LoginPage> {
       try {
         // 🔹 ตรวจสอบว่า response["error"] เป็น JSON หรือไม่
         final errorData = jsonDecode(response["error"]);
-        String errorMessage = errorData is Map<String, dynamic> && errorData.containsKey("error") 
-            ? errorData["error"]
-            : response["error"];
-        
+        String errorMessage =
+            errorData is Map<String, dynamic> && errorData.containsKey("error")
+                ? errorData["error"]
+                : response["error"];
+
         showErrorDialog(errorMessage); // 🔹 แสดง Popup แจ้งเตือน
       } catch (e) {
         showErrorDialog(response["error"] ?? "เกิดข้อผิดพลาด");
@@ -74,44 +75,56 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Sample App",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
-              const SizedBox(height: 10),
 
-              const Text(
-                "Login Page",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
-              ),
-              const SizedBox(height: 20),
 
-              const Text(
-                "Sign in",
-                style: TextStyle(fontSize: 18, color: Colors.black54),
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, // จัดให้อยู่ตรงกลาง
+                children: [
+                    const Text(
+                    "Mini",
+                    style: TextStyle(
+                      fontFamily: 'Prompt',
+                      fontSize: 50,
+                      fontWeight: FontWeight.w700, // น้ำหนักเป็นเลข
+                      color: Color(0xFF000000),
+                    ),
+                    ),
+
+                  const SizedBox(width: 12),
+
+                  const Text(
+                    "Shop",
+                    style: TextStyle(
+                      fontFamily: 'Prompt',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 50,
+                      color: Color.fromARGB(255, 255, 198, 0),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
+
+
+              const SizedBox(height: 50),
 
               // 🔹 ช่องใส่ Username
-              TextField(
+                TextField(
                 controller: _username,
                 decoration: InputDecoration(
                   labelText: "UserName",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10),
                   ),
                   prefixIcon: const Icon(Icons.person),
                 ),
-              ),
-              const SizedBox(height: 15),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'Prompt',
+                  fontWeight: FontWeight.w400), // ปรับขนาดตัวอักษรและฟอนต์
+                ),
+
+              const SizedBox(height: 25),
 
               // 🔹 ช่องใส่ Password พร้อมปุ่มแสดง/ซ่อนรหัสผ่าน
               TextField(
@@ -136,6 +149,12 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 obscureText: !_isPasswordVisible,
+
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'Prompt',
+                  fontWeight: FontWeight.w400,
+                ), // ปรับขนาดตัวอักษรและฟอนต์
               ),
 
               const SizedBox(height: 10),
@@ -148,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: const Text(
                     "Forgot Password",
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ),
@@ -161,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Color.fromARGB(255, 255, 198, 0),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -169,7 +188,47 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: const Text(
                     "Login",
-                    style: TextStyle(fontSize: 22, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 23, 
+                      color: Colors.black,
+                      fontFamily: 'Prompt',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+              
+                GestureDetector(
+                onTap: () {
+                  // TODO: Add Google Sign-In Function
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 15, vertical: 10), // ขนาด padding
+                  decoration: BoxDecoration(
+                    color: Colors.white, // พื้นหลังสีขาว
+                    borderRadius: BorderRadius.circular(20), // มุมมน
+                    border: Border.all(
+                        color: Colors.black, width: 1), // เส้นขอบสีดำ
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // ให้ขนาดพอดีกับเนื้อหา
+                    children: [
+                      Image.asset('assets/google.png',
+                          width: 28), // ไอคอน Google
+                      SizedBox(width: 10), // ระยะห่างระหว่างไอคอนกับข้อความ
+                      Text(
+                        'Sign in with Google',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontFamily: 'Prompt',
+                          fontWeight: FontWeight.w500,
+                        ), // ข้อความ
+                      ),
+                    ],
                   ),
                 ),
               ),
